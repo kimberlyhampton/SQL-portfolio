@@ -19,19 +19,19 @@ INSERT INTO marathon (participant_name, previous_experience,  completion_fractio
 INSERT INTO marathon (participant_name, previous_experience,  completion_fraction)
     VALUES ("Rajnighanda Kapoor", "no", 1);
 
-#Use a SELECT statement to show every participant name and the percent of the marathon that they completed.
+# Use a SELECT statement to show every participant name and the percent of the marathon that they completed.
 
 SELECT participant_name, 
 completion_fraction*100 AS marathon_completion
 FROM marathon;
 
-#Use a SELECT statement to show every participant name and the percent of the marathon that they completed. Show the percent of the marathon completed rounded to one decimal place.
+# Use a SELECT statement to show every participant name and the percent of the marathon that they completed. Show the percent of the marathon completed rounded to one decimal place.
 
 SELECT participant_name,
 ROUND(completion_fraction*100,1) as marathon_completion
 FROM marathon;
 
-#Use a SELECT statement to show how many employees completed each quarter of the marathon.
+# Use a SELECT statement to show how many employees completed each quarter of the marathon.
 
 SELECT COUNT(*),
 CASE WHEN completion_fraction >=.75 THEN "75%+"
