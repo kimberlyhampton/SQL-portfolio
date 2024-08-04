@@ -1,0 +1,100 @@
+# Here are potential answers to the example questions in the final SQL project. 
+# Note that there are often multiple ways to write SQL to come up with the same answer. 
+
+#1. 
+SELECT CustomerId, FirstName ,LastName, Country
+FROM chinook.customers
+WHERE Country <> 'USA';
+
+#2.
+SELECT * FROM chinook.customers
+WHERE Country = 'Brazil';
+
+#3.
+SELECT cust.FirstName, cust.LastName, inv.InvoiceId, inv.BillingCountry, inv.InvoiceDate
+FROM chinook.invoices as inv 
+LEFT JOIN chinook.customers as cust 
+on inv.CustomerId = cust.CustomerId 
+WHERE inv.BillingCountry = "Brazil";
+
+#4.
+SELECT *
+FROM chinook.employees
+WHERE title='Sales Support Agent';
+
+#5.
+SELECT distinct BillingCountry
+FROM chinook.invoices;
+
+#6.
+SELECT emp.LastName, emp.Firstname, inv.InvoiceId
+FROM chinook.Employees emp 
+JOIN chinook.Customers cust ON cust.SupportRepId = emp.EmployeeId
+JOIN chinook.Invoices Inv ON Inv.CustomerId = cust.CustomerId;
+
+#7.
+SELECT emp.LastName, emp.Firstname, cust.FirstName, cust.LastName, cust.Country, inv.total
+FROM chinook.employees emp 
+JOIN chinook.Customers cust ON cust.SupportRepId = emp.EmployeeId
+JOIN chinook.Invoices Inv ON Inv.CustomerId = cust.CustomerId;
+
+#8.
+SELECT COUNT(*)
+FROM chinook.invoices
+WHERE InvoiceDate like '2009%'
+
+#9.
+SELECT SUM(Total)
+FROM chinook.Invoices
+WHERE InvoiceDate BETWEEN '2009-01-01' AND '2009-12-31'
+
+#10.
+SELECT InvoiceLineId,Name
+FROM chinook.invoice_items inv
+JOIN chinook.tracks name
+ON inv.TrackId=name.TrackId;
+
+#11.
+SELECT art.Name as artist, track.name as track, inv.InvoiceId
+FROM chinook.artists art
+JOIN chinook.albums alb
+ON art.ArtistId=alb.ArtistId
+JOIN chinook.tracks track
+ON alb.AlbumId=track.AlbumId
+JOIN chinook.invoice_items inv
+ON track.TrackId=inv.TrackId;
+
+#12.
+SELECT track.Name as track, alb.Title as album, media.Name as media, gen.Name as genre
+FROM chinook.tracks track
+JOIN chinook.albums alb
+ON track.AlbumId=alb.AlbumId
+JOIN chinook.media_types media
+ON track.MediaTypeId=media.MediaTypeId
+JOIN chinook.genres gen
+ON track.GenreId=gen.GenreId;
+
+#13.
+SELECT distinct emp.FirstName,emp.LastName,
+ROUND(SUM(inv.total)) as revenue
+FROM chinook.invoices inv
+JOIN chinook.customers cust
+ON inv.CustomerId=cust.CustomerId
+JOIN chinook.employees emp
+ON cust.SupportRepId=emp.EmployeeId
+WHERE title like '%agent'
+GROUP BY emp.FirstName;
+
+#14.
+SELECT distinct emp.FirstName,emp.LastName,
+ROUND(SUM(Inv.Total), 2) as revenue
+FROM chinook.invoices inv
+JOIN chinook.customers cust
+ON inv.CustomerId=cust.CustomerId
+JOIN chinook.employees emp
+ON cust.SupportRepId=emp.EmployeeId
+WHERE title like '%agent'
+AND InvoiceDate like '2009%'
+GROUP BY emp.FirstName
+ORDER BY revenue desc
+LIMIT 1;
