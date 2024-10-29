@@ -51,7 +51,7 @@ FROM staff_list
 INNER JOIN staff
 ON staff_list.ID = staff.staff_id
 INNER JOIN address
-ON staff.address_id = address.address_id;
+ON staff.address_id = address.address_id; 
 
 /*Please pull together a list of each inventory item you have stocked, including the store_id number, 
 the inventory_id, the name of the film, the film’s rating, its rental rate and replacement cost.*/
