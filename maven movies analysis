@@ -136,15 +136,15 @@ FROM advisor;
 Same questions. Finally, how about actors with just one award?*/
 SELECT 
 CASE 
-    WHEN UPPER(TRIM(actor_award.awards)) = 'EMMY, OSCAR, TONY' THEN '3 awards'
-    WHEN UPPER(TRIM(actor_award.awards)) IN ('EMMY, OSCAR', 'EMMY, TONY', 'OSCAR, TONY') THEN '2 awards'
-    ELSE '1 award'
+WHEN UPPER(TRIM(actor_award.awards)) = 'EMMY, OSCAR, TONY' THEN '3 awards'
+WHEN UPPER(TRIM(actor_award.awards)) IN ('EMMY, OSCAR', 'EMMY, TONY', 'OSCAR, TONY') THEN '2 awards'
+ELSE '1 award'
 END AS number_of_awards,
 AVG(CASE WHEN actor_award.actor_id IS NULL THEN 0 ELSE 1 END) AS pct_w_one_film
 FROM actor_award
 GROUP BY 
 CASE 
-    WHEN UPPER(TRIM(actor_award.awards)) = 'EMMY, OSCAR, TONY' THEN '3 awards'
-    WHEN UPPER(TRIM(actor_award.awards)) IN ('EMMY, OSCAR', 'EMMY, TONY', 'OSCAR, TONY') THEN '2 awards'
-    ELSE '1 award'
+WHEN UPPER(TRIM(actor_award.awards)) = 'EMMY, OSCAR, TONY' THEN '3 awards'
+WHEN UPPER(TRIM(actor_award.awards)) IN ('EMMY, OSCAR', 'EMMY, TONY', 'OSCAR, TONY') THEN '2 awards'
+ELSE '1 award'
 END;
