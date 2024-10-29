@@ -1,0 +1,150 @@
+#In this SQL, I'm leveraging my skills to analyze data from multiple tables in the Maven Movies database, addressing key questions posed by a potential acquirer.
+
+--I would like to see the film’s title,description, and the store_id value associated with each item, and its inventory_id.
+SELECT film.title, 
+film.description, 
+inventory.inventory_id, 
+inventory.store_id
+FROM  film
+INNER JOIN inventory
+ON inventory.film_id=film.film_id;
+
+--Can you pull  a list of all titles, and figure out how many actors are associated with each title?
+SELECT film.title, 
+COUNT(film_actor.actor_id) as number_of_actors
+FROM film_actor
+LEFT JOIN film
+ON film_actor.film_id = film.film_id
+GROUP BY film.title;
+
+--It would be great to have a list of all actors, with each title that they appear in. Could you please pull that for me?
+SELECT film.title, 
+actor.first_name, 
+actor.last_name
+FROM actor
+INNER JOIN film_actor
+ON actor.actor_id = film_actor.actor_id
+INNER JOIN film
+ON film.film_id = film_actor.film_id
+ORDER BY title;
+
+--Could you pull a list of distinct titles and their descriptions, currently available in inventory at store 2?
+SELECT DISTINCT film.title, 
+film.description
+FROM film
+INNER JOIN inventory
+ON film.film_id = inventory.film_id
+AND store_id = 2;
+
+--Could you pull one list of all staff and advisor names, and include a column noting whether they are a staff member or advisor?
+SELECT 'advisor' as type, first_name, last_name FROM advisor
+UNION
+SELECT 'staff' as type, first_name, last_name FROM staff;
+
+--Please send over the managers’ names at each store, with the full address of each property (street address, district, city, and country please).
+SELECT staff_list.name, 
+address.address, 
+address.district, 
+staff_list.city, 
+staff_list.country
+FROM staff_list
+INNER JOIN staff
+ON staff_list.ID = staff.staff_id
+INNER JOIN address
+ON staff.address_id = address.address_id;
+
+/*Please pull together a list of each inventory item you have stocked, including the store_id number, 
+the inventory_id, the name of the film, the film’s rating, its rental rate and replacement cost.*/
+SELECT inventory.store_id,
+inventory.inventory_id,
+film.title,
+film.rating,
+film.rental_rate,
+film.replacement_cost
+FROM inventory
+LEFT JOIN film
+ON inventory.film_id = film.film_id;
+
+/*From the same list of films you just pulled, please roll that data up and provide a summary level overview of 
+your inventory. We would like to know how many inventory items you have with each rating at each store.*/
+SELECT inventory.store_id, 
+film.rating,
+COUNT(inventory_id) AS number_of_films
+FROM inventory
+LEFT JOIN film
+ON film.film_id = inventory.film_id
+GROUP BY inventory.store_id, film.rating;
+
+/*Similarly, we want to understand how diversified the inventory is in terms of replacement cost. We want to
+see how big of a hit it would be if a certain category of film became unpopular at a certain store.
+We would like to see the number of films, as well as the average replacement cost, and total replacement
+cost, sliced by store and film category. */
+SELECT inventory.store_id,
+category.name AS category,
+COUNT(inventory.inventory_id) AS films,
+AVG(film.replacement_cost) AS avg_cost,
+SUM(film.replacement_cost) AS total_cost
+FROM inventory
+LEFT JOIN film 
+ON inventory.film_id = film.film_id
+LEFT JOIN film_category
+ON film.film_id = film_category.film_id
+LEFT JOIN category
+ON film_category.category_id = category.category_id
+GROUP BY inventory.store_id, category.name;
+
+/*Please provide a list of all customer names, which store they go to, whether or not they are currently active, and their full
+addresses – street address, city, and country.*/
+SELECT customer_list.name,
+customer_list.address,
+customer_list.city,
+customer_list.country,
+customer.store_ID AS store,
+customer.active
+FROM customer_list
+LEFT JOIN customer
+ON customer_list.ID = customer.customer_id;
+
+/*Please pull together a list of customer names, their total lifetime rentals, and the
+sum of all payments you have collected from them. It would be great to see this ordered on total lifetime value, with the most valuable customers at the top of the list. */
+SELECT customer_list.name,
+COUNT(payment.rental_id) as rentals,
+SUM(payment.amount) as total_spent
+FROM customer_list
+INNER JOIN rental
+ON customer_list.ID = rental.customer_id
+INNER JOIN payment
+ON rental.rental_id = payment.rental_id
+GROUP BY customer_list.name
+ORDER BY total_spent desc;
+
+/*Could you please provide a list of advisor and investor names in one table? Could you please note whether they are an
+investor or an advisor, and for the investors, it would be good to include which company they work with.*/
+SELECT 'investor' as type,
+first_name, 
+last_name,
+company_name
+FROM investor
+UNION
+SELECT 'advisor' as type,
+first_name,
+last_name,
+'N/A'
+FROM advisor;
+
+/*Of all the actors with three types of awards, for what % of them do we carry a film? And how about for actors with two types of awards? 
+Same questions. Finally, how about actors with just one award?*/
+SELECT 
+CASE 
+    WHEN UPPER(TRIM(actor_award.awards)) = 'EMMY, OSCAR, TONY' THEN '3 awards'
+    WHEN UPPER(TRIM(actor_award.awards)) IN ('EMMY, OSCAR', 'EMMY, TONY', 'OSCAR, TONY') THEN '2 awards'
+    ELSE '1 award'
+END AS number_of_awards,
+AVG(CASE WHEN actor_award.actor_id IS NULL THEN 0 ELSE 1 END) AS pct_w_one_film
+FROM actor_award
+GROUP BY 
+CASE 
+    WHEN UPPER(TRIM(actor_award.awards)) = 'EMMY, OSCAR, TONY' THEN '3 awards'
+    WHEN UPPER(TRIM(actor_award.awards)) IN ('EMMY, OSCAR', 'EMMY, TONY', 'OSCAR, TONY') THEN '2 awards'
+    ELSE '1 award'
+END;
